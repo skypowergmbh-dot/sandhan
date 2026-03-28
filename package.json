@@ -1,0 +1,1 @@
+{\n  \"name\": \"your-package-name\",\n  \"version\": \"1.0.0\",\n  \"description\": \"A package for handling email functionality\",\n  \"dependencies\": {\n    \"nodemailer\": \"^6.6.3\",\n    \"email-validator\": \"^2.0.4\"\n  }\n}
