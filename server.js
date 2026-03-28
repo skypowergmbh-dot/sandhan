@@ -1,43 +1,37 @@
+// server.js
+
 const express = require('express');
-const nodemailer = require('nodemailer');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const morgan = require('morgan');
+
+// Load environment variables from .env file
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware to parse JSON
-app.use(express.json());
+// Middleware
+app.use(cors()); // Enable CORS for all routes
+app.use(morgan('combined')); // Log requests to the console
+app.use(express.json()); // Parse JSON request bodies
 
-// SMTP configuration for GMX
-const transporter = nodemailer.createTransport({
-    host: 'mail.gmx.com',
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-        user: 'your_email@gmx.de',  // replace with your GMX email
-        pass: 'your_email_password'  // replace with your GMX password
-    }
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ message: 'Server is healthy' });
 });
 
-// POST endpoint to send email
-app.post('/api/send-email', (req, res) => {
-    const { name, email, subject, message } = req.body;
-
-    const mailOptions = {
-        from: email,
-        to: 'sandhan.westphal@gmx.de',
-        subject: subject,
-        text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return res.status(500).send(error.toString());
-        }
-        res.status(200).send('Email sent: ' + info.response);
-    });
+// Example route
+app.get('/api/example', (req, res) => {
+    res.json({ message: 'This is an example endpoint' });
 });
 
-// Start the server
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
